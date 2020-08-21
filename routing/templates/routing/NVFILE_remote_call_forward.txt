@@ -1,0 +1,7 @@
+;NVFILE 2.0
+; Remote Call Forward
+; ===================
+;
+DN,W1,DN1{% for object in object_list %}
+{{ object.called_number }},1,{{ object.forward_number }}{% endfor %}
+;NVFILE END

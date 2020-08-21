@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1 class="page-header">Import Site</h1>
+  <div class="well">
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <p><label></label><input id="submit" type="submit" value="Submit"/></p>
+    </form>
+  </div>
+{% endblock content %}

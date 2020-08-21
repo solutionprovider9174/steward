@@ -1,0 +1,26 @@
+[Unit]
+Description=Steward Web Application
+Requires=nginx.service postgresql.service
+Before=nginx.service
+After=postgresql.service
+
+[Service]
+WorkingDirectory=/var/html/steward
+PIDFile=/run/steward.pid
+Type=forking
+KillMode=process
+Restart=always
+ExecStart=/var/html/steward/venv/bin/gunicorn                   \
+          --workers 4                                           \
+          --group ops                                           \
+          --user ops                                            \
+          --bind 127.0.0.1:8000                                 \
+          --pid /run/steward.pid                                \
+          --pythonpath=/var/html/steward                        \
+          --name steward                                        \
+          --error-logfile=/var/log/steward.error                \
+          --daemon                                              \
+          steward.wsgi
+
+[Install]
+WantedBy=multi-user.target

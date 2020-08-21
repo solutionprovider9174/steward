@@ -1,0 +1,57 @@
+{% extends 'tools/base.html' %}
+
+{% block tool_content %}
+  <h1 class="page-header">Registration By Type Report</h1>
+  <div>
+    <h2 class="text-primary"><i class="fa fa-info"></i> Documentation</h2>
+    <p>Polls BroadWorks for registrations and returns a report by Device Type. Currently only polls for the following Device Types:
+      <ul>
+        <li>Polycom Soundpoint IP 300</li>
+        <li>Polycom Soundpoint IP 320 330</li>
+        <li>Polycom Soundpoint IP 335</li>
+        <li>Polycom Soundpoint IP 4000</li>
+        <li>Polycom Soundpoint IP 430</li>
+        <li>Polycom Soundpoint IP 450</li>
+        <li>Polycom Soundpoint IP 450 Test</li>
+        <li>Polycom Soundpoint IP 500</li>
+        <li>Polycom Soundpoint IP 550</li>
+        <li>Polycom Soundpoint IP 550 test</li>
+        <li>Polycom Soundpoint IP 600</l</li>
+        <li>Polycom Soundpoint IP 601</li>
+        <li>Polycom Soundpoint IP 650</li>
+        <li>Polycom Soundpoint IP VVX 1500</li>
+        <li>Polycom</li>
+        <li>Polycom_IP335</li>
+        <li>Polycom_IP450</li>
+        <li>Polycom_IP550</li>
+        <li>Polycom_IP650</li>
+        <li>Polycom_Test</li>
+        <li>Polycom_VVX101</li>
+        <li>Polycom_VVX201</li>
+        <li>Polycom_VVX300</li>
+        <li>Polycom_VVX400</li>
+        <li>Polycom_VVX500</li>
+        <li>Polycom_VVX600</li>
+        <li>Polycom-331</li>
+        <li>Polycom-conf</li>
+        <li>PolycomFirmware</li>
+      </ul>
+    </p>
+
+    <h2 class="text-danger"><i class="fa fa-warning"></i> Invoke</h2>
+    <div class="well">
+      <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p><label></label><input id="submit" type="submit" value="Run"/></p>
+      </form>
+    </div>
+  </div>
+{% endblock tool_content %}
+
+{% block javascript %}
+  {{ block.super }}
+  {% if form.javascript %}
+    <script src="{{ form.javascript }}"></script>
+  {% endif %}
+{% endblock javascript %}

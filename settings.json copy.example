@@ -1,0 +1,54 @@
+{
+    "admins": [ 
+        ["Admin 1", "admin1@example.com"],
+        ["Admin 2", "admin2@example.com"]
+    ],
+    "database": { 
+        "engine": "django.db.backends.postgresql_psycopg2",
+        "host": "localhost",
+        "port": "5432",
+        "db_name": "test",
+        "username": "test",
+        "password": "test"
+    },
+    "django": {
+        "allowed_hosts": [],
+        "debug": true
+    },
+    "email": {
+        "from_address": "system@example.com",
+        "smtp_server": "smtp.example.com"
+    },
+    "platforms": {
+        "broadworks": {
+            "password": "",
+            "url": "https://broadworks-fqdn.example.com/webservice/services/ProvisioningService?wsdl",
+            "username": ""
+        },
+        "metaswitch": {
+            "host": "x.x.x.x",
+            "port": 22,
+            "username": "steward",
+            "password": "",
+            "filenames": {
+              "route": "bob.txt",
+              "fraud-bypass": "bob2.txt",
+              "outbound-route": "bob3.txt",
+              "remote-call-forward" "bob4.txt"
+            },
+            "pathnames": {
+              "local": "/backup/",
+              "remote": "/ftp/nvfiles/"
+            }
+        },
+        "palladion": {
+            "uri": "https://palladion.example.com/me",
+            "api_key": ""
+        }
+    },
+    "redis": {
+        "host": "localhost",
+        "port": 6379,
+        "db": 0
+    }
+}

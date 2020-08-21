@@ -1,0 +1,35 @@
+{% extends 'sansayvcm_client/index.html' %}
+
+{% block tool_content %}
+<div class="col-md-12">
+    <div class="panel panel-primary">
+        <div class="panel-heading">VCM Request Logs</div>
+        <div class="panel-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th class="col-md-1">Number</th>
+                        <th class="col-md-1">Cluster</th>
+                        <th class="col-md-1">Action</th>
+                        <th class="col-md-6">XML Config</th>
+                        <th class="col-md-1">Status</th>
+                        <th class="col-md-2">Transaction Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                    <tr>
+                        <td>{{object.number}}</td>
+                        <td>{{object.cluster_id}}</td>
+                        <td>{{object.action}}</td>
+                        <td><pre>{{object.xmlcfg}}</pre></td>
+                        <td>{{object.result_status}}</td>
+                        <td>{{object.created}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock tool_content %}

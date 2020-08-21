@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-3 col-md-2 sidebar">
+        <ul class="nav nav-sidebar">
+            <li class="header">Routing Tables</li>
+            {% url 'sansayvcm_client:vcm-route-logs' as the_url %}
+            <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+                <a href="{{ the_url }}">
+                    Routing Logs
+                {% if request.get_full_path == the_url %}
+                    <span class="sr-only">(current)</span>
+                {% endif %}
+                </a>
+            </li>
+            {% url 'sansayvcm_client:sansay-vcm-request' as the_url %}
+            <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+                <a href="{{ the_url }}">
+                    Test Sansay Request
+                {% if request.get_full_path == the_url %}
+                    <span class="sr-only">(current)</span>
+                {% endif %}
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    {% block tool_content %}{% endblock tool_content %}
+</div>
+
+{% endblock content %}

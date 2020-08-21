@@ -1,0 +1,15 @@
+{% extends 'routing/base.html' %}
+{% load humanize %}
+
+{% block tool_content %}
+  <h1 class="page-header">Delete Outbound Carrier Override for {{ object.number }}</h1>
+  <div class="alert alert-danger" role="alert">
+    <i class="fa fa-2x fa-warning pull-left"></i> <strong>DANGER!</strong>
+    Deleting a number from the Outbound Carrier Override list will affect the dialed calls for the network!
+  </div>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p><label></label><input id="submit" type="submit" value="Confirm Delete"/></p>
+  </form>
+{% endblock tool_content %}

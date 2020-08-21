@@ -1,0 +1,17 @@
+{% extends 'routing/base.html' %}
+
+{% block tool_content %}
+  <h1 class="page-header">
+    Transmission #{{ object.id }} <small>{{ object.get_result_state_display }}</small>
+  </h1>
+  <div>
+    <p>
+      Process Id: {{ object.id }}<br/>
+      Type: {{ object.get_type_display }}<br/>
+      Checksum (MD5): {{ object.checksum }}<br/>
+      Result: {{ object.get_result_state_display }}<br/>
+      Completed: {{ object.result_timestamp }}<br/
+    </p>
+    <pre>{{ object.result_data }}</pre>
+  </div>
+{% endblock tool_content %}

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+<div class="pull-right">
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary {% if object.sync_state > object.SYNC_STATE_CLEAR %}disabled{% endif %}">
+      <i class="fa fa-fw fa-refresh {% if object.sync_state > object.SYNC_STATE_CLEAR %}fa-spin{% endif %}"></i> Sync{% if object.sync_state > object.SYNC_STATE_CLEAR %}ing{% endif %}
+    </button>
+  </form>
+</div>
+
+  <h1 class="page-header">{{ object.name }} <small>{{ object.provider_id }} <i class="fa fa-fw fa-chevron-right"></i> {{ object.group_id }}</small></h1>
+</div>
+
+  <!-- Nav tabs -->
+  <ul id="content-tabs" class="nav nav-tabs" role="tablist">
+    <li role="presentation"><a href="#phones" aria-controls="phones" role="tab" data-toggle="tab"><i class="fa fa-fw fa-phone"></i> Phones</a></li>
+    <li role="presentation"><a href="#equipment" aria-controls="equipment" role="tab" data-toggle="tab"><i class="fa fa-fw fa-server"></i> Equipment</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="phones">
+
+      <div class="" style="font-weight: bold;">
+        <div class="col-lg-3 col-md-2 col-sm-4 col-xs-3" style="background-color: #F5F5F5; padding: .5em; border-color: grey; border: 1px solid #ddd;">Name</div>
+        <div class="col-lg-2 col-md-2 hidden-sm hidden-xs" style="background-color: #F5F5F5; padding: .5em; border-color: grey; border: 1px solid #ddd;">Primary User</div>
+        <div class="col-lg-1 col-md-1 hidden-sm hidden-xs" style="background-color: #F5F5F5; padding: .5em; border-color: grey; border: 1px solid #ddd;">Lines</div>
+        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-4" style="background-color: #F5F5F5; padding: .5em; border-color: grey; border: 1px solid #ddd;">Type</div>
+        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5" style="background-color: #F5F5F5; padding: .5em; border-color: grey; border: 1px solid #ddd;">Serial</div>
+      </div>
+
+      {% for device in site.devices.all %}
+        <div id="device_{{ device.id }}" class="clearfix table-row">
+          <form method="POST" action="{% url 'deploy:device-update' device.pk %}" poll="{% url 'deploy:device-detail' device.pk %}?format=json" class="phone-form form-horizontal" role="form">
+            {% csrf_token %}
+            <div class="col-lg-3 col-md-2 col-sm-4 col-xs-3" style="height: 4em; padding: .5em; border-color: grey; border: 1px solid #ddd;">
+              <div>{{ device.name }}</div>
+              <div class="visible-sm visible-xs">
+                <small>{{ device.primary_user_dn }}</small>
+              </div>
+            </div>
+            <div class="col-lg-2 col-md-2 hidden-sm hidden-xs" style="height: 4em; padding: .5em; border-color: grey; border: 1px solid #ddd;">
+              {% if device.primary_user_dn %}
+                {{ device.primary_user_dn }}
+                {% if device.primary_user_id %}
+                  <br/><small>{{ device.primary_user_name }}</small>
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="col-lg-1 col-md-1 hidden-sm hidden-xs" style="height: 4em; padding: .5em; border-color: grey; border: 1px solid #ddd;">{{ device.line_port_count }}</div>
+            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-4" style="height: 4em; padding: .5em; border-color: grey; border: 1px solid #ddd;">
+              <select class="device-type-input form-control" name="device_type">
+                <option value="">----</option>
+                {% for dt in phone_device_types %}
+                  <option value="{{ dt.id }}" skus="{{ dt.skus|join:','}}" format="{{ dt.serial_format }}" {% if dt.id == device.device_type_id %}selected{% endif %}>{{ dt.manufacturer }} {{ dt.model }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5" style="height: 4em; padding: .5em; border-color: grey; border: 1px solid #ddd;">
+              <button class="btn btn-primary btn-action pull-right" style="margin-left: .5em;" type="submit"><i class="fa fa-save"></i></button>
+              <div class="input-group">
+                <input name="serial" type="text" class="serial-input monospace form-control" value="{{ device.serial|default:"" }}"/>
+                <span class="input-group-btn">
+                  <button class="btn btn-default btn-clear-serial" type="button"><i class="fa fa-fw fa-times"></i></button>
+                </span>
+              </div>
+            </div>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="equipment">
+      <table class="table table-bordered table-striped table-hover">
+        <tr>
+          <th class="col-lg-6">Type</th>
+          <th class="col-lg-6">Serial</th>
+          <th><a href="#" class="btn btn-xs btn-default"><i class="fa fa-fw fa-plus"></i></a></th>
+        </tr>
+        {% for equipment in site.equipment.all %}
+          <tr>
+            <td>
+              <select class="form-control">
+                <option value="">----</option>
+                <option value="Polycom400">Polycom VVX 400</option>
+                <option value="Polycom500">Polycom VVX 500</option>
+                <option value="Polycom600">Polycom VVX 600</option>
+              </select>
+            </td>
+            <td><input type="text" class="form-control" value="{{ device.serial|default:"" }}"/></td>
+            <td>
+              <button class="btn btn-xs btn-default btn-action"><i class="fa fa-fw fa-save"></i></button>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock content %}

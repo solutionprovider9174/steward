@@ -1,0 +1,4 @@
+;NVFILE 2.0
+DN,UDA20{% for object in object_list %}
+{{ object.number }},999999{% endfor %}
+;NVFILE END

@@ -1,0 +1,68 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Steward for C Spire Business Solutions">
+    <meta name="author" content="Morgan Humes <mhumes@cspire.com>">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}">
+
+    <title>Steward</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'bower/bootstrap/dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bower/font-awesome/css/font-awesome.min.css' %}">
+    <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="{% url 'index' %}">Steward</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="{% url 'tools:index' %}">Tools</a></li>
+            <li><a href="{% url 'routing:number-search' %}">Routing</a></li>
+            <li><a href="{% url 'sansayvcm_client:index' %}">Sansay VCM</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-lg fa-user"></i> {{ user.first_name }} {{ user.last_name }} <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                  <li class="dropdown-header">Account</li>
+                  <li><a href="#"><i class="fa fa-fw fa-user"></i> Profile</a></li>
+                  <li><a href="{% url 'logout' %}"><i class="fa fa-fw fa-sign-out"></i> Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      {% block content %}{% endblock content %}
+    </div>
+
+    {% block javascript %}
+      <script src="{% static 'bower/jquery/dist/jquery.min.js' %}"></script>
+      <script src="{% static 'bower/js-cookie/src/js.cookie.js' %}"></script>
+      <script src="{% static 'bower/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+      <script src="{% static 'js/tabs.js' %}"></script>
+      <script src="{% static 'js/util.js' %}"></script>
+    {% endblock javascript %}
+  </body>
+</html>

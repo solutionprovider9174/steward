@@ -1,0 +1,6 @@
+[submodule "lib/pybw"]
+	path = lib/pybw
+	url = https://gitlab.com/301-solutions/toolkit/bw.git
+[submodule "lib/pyutil"]
+	path = lib/pyutil
+	url = git@git.ops.cspirevoice.com:ops/util.git

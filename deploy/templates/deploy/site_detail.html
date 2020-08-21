@@ -1,0 +1,349 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+<div class="pull-right">
+  <form method="POST" class="sync-form" poll="{% url 'deploy:site-detail' object.id %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary btn-sync" {% if object.sync_state > object.SYNC_STATE_CLEAR %}disabled{% endif %}>
+      <i class="fa fa-fw fa-refresh"></i> Sync
+    </button>
+  </form>
+</div>
+
+  <h1 class="page-header">{{ object.name }} <small>{{ object.provider_id }} <i class="fa fa-fw fa-chevron-right"></i> {{ object.group_id }}</small></h1>
+</div>
+
+  <!-- Nav tabs -->
+  <ul id="content-tabs" class="nav nav-tabs" role="tablist">
+    <li role="presentation"><a href="#phones" aria-controls="phones" role="tab" data-toggle="tab"><i class="fa fa-fw fa-phone"></i> Phones</a></li>
+    <li role="presentation"><a href="#equipment" aria-controls="equipment" role="tab" data-toggle="tab"><i class="fa fa-fw fa-server"></i> Equipment</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="phones">
+
+      <div class="" style="font-weight: bold;">
+        <div class="col-lg-3 col-md-2 col-sm-4 col-xs-3" style="background-color: #F5F5F5; padding: .5em; border-color: grey; border: 1px solid #ddd;">Name</div>
+        <div class="col-lg-2 col-md-2 hidden-sm hidden-xs" style="background-color: #F5F5F5; padding: .5em; border-color: grey; border: 1px solid #ddd;">Primary User</div>
+        <div class="col-lg-1 col-md-1 hidden-sm hidden-xs" style="background-color: #F5F5F5; padding: .5em; border-color: grey; border: 1px solid #ddd;">Lines</div>
+        <div class="col-lg-2 col-md-3 col-sm-4 col-xs-4" style="background-color: #F5F5F5; padding: .5em; border-color: grey; border: 1px solid #ddd;">Type</div>
+        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5" style="background-color: #F5F5F5; padding: .5em; border-color: grey; border: 1px solid #ddd;">Serial</div>
+      </div>
+
+      {% for device in site.devices.all %}
+        <div id="device_{{ device.id }}" class="clearfix table-row">
+          <form method="POST" action="{% url 'deploy:device-update' device.pk %}" poll="{% url 'deploy:device-detail' device.pk %}" class="phone-form form-horizontal" role="form">
+            {% csrf_token %}
+            <input type="hidden" name="state" value="{{ device.state }}" class="state-input" disabled />
+            <div class="col-lg-3 col-md-2 col-sm-4 col-xs-3" style="height: 4em; padding: .5em; border-color: grey; border: 1px solid #ddd;">
+              <div>{{ device.name }}</div>
+              <div class="visible-sm visible-xs">
+                <small>{{ device.primary_user_dn }}</small>
+              </div>
+            </div>
+            <div class="col-lg-2 col-md-2 hidden-sm hidden-xs" style="height: 4em; padding: .5em; border-color: grey; border: 1px solid #ddd;">
+              {% if device.primary_user_dn %}
+                {{ device.primary_user_dn }}
+                {% if device.primary_user_id %}
+                  <br/><small>{{ device.primary_user_name }}</small>
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="col-lg-1 col-md-1 hidden-sm hidden-xs" style="height: 4em; padding: .5em; border-color: grey; border: 1px solid #ddd;">{{ device.line_port_count }}</div>
+            <div class="col-lg-2 col-md-3 col-sm-4 col-xs-4" style="height: 4em; padding: .5em; border-color: grey; border: 1px solid #ddd;">
+              <select class="device-type-input form-control" name="device_type" {% if device.state == device.STATE_RUNNING %}disabled{% endif %}>
+                <option value="">----</option>
+                {% for dt in phone_device_types %}
+                  <option value="{{ dt.id }}" skus="{{ dt.skus|join:','}}" format="{{ dt.serial_format }}" {% if dt.id == device.device_type_id %}selected{% endif %}>{{ dt.manufacturer }} {{ dt.model }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5" style="height: 4em; padding: .5em; border-color: grey; border: 1px solid #ddd;">
+              <button class="btn {% if device.state in device.CHOICES_STATE_PRIMARY %}btn-primary{% elif device.state in device.CHOICES_STATE_SUCCESS %}btn-success{% elif device.state in device.CHOICES_STATE_ERROR %}btn-danger{% endif %} btn-action pull-right" style="margin-left: .5em;" type="submit" {% if device.state == device.STATE_RUNNING %}disabled{% endif %}>
+                <i class="fa {% if device.state == device.STATE_RUNNING %}fa-spin fa-refresh{% elif device.state in device.CHOICES_STATE_PRIMARY %}fa-save{% elif device.state in device.CHOICES_STATE_SUCCESS %}fa-check{% elif device.state in device.CHOICES_STATE_ERROR %}fa-warning{% endif %}"></i>
+              </button>
+              <div class="input-group">
+                <input name="serial" type="text" class="serial-input monospace form-control" value="{{ device.serial|default:"" }}" {% if device.state == device.STATE_RUNNING %}disabled{% endif %} />
+                <span class="input-group-btn">
+                  <button class="btn btn-default btn-clear-serial" type="button"><i class="fa fa-fw fa-times"></i></button>
+                </span>
+              </div>
+            </div>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="equipment">
+      <table class="table table-bordered table-striped table-hover">
+        <tr>
+          <th class="col-lg-6">Type</th>
+          <th class="col-lg-6">Serial</th>
+          <th><a href="#" class="btn btn-xs btn-default"><i class="fa fa-fw fa-plus"></i></a></th>
+        </tr>
+        {% for equipment in site.equipment.all %}
+          <tr>
+            <td>
+              <select class="form-control">
+                <option value="">----</option>
+                <option value="Polycom400">Polycom VVX 400</option>
+                <option value="Polycom500">Polycom VVX 500</option>
+                <option value="Polycom600">Polycom VVX 600</option>
+              </select>
+            </td>
+            <td><input type="text" class="form-control" value="{{ device.serial|default:"" }}"/></td>
+            <td>
+              <button class="btn btn-xs btn-default btn-action"><i class="fa fa-fw fa-save"></i></button>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block javascript %}
+  {{ block.super }}
+  <script>
+    function poll_row(form) {
+      // Disable Form
+      var btn = $(form).find('button.btn-action');
+      var btn_i = $(btn).find('i');
+      $(btn_i).removeClass('fa-save');
+      $(btn_i).addClass('fa-refresh fa-spin');
+      $(form).find('input').each(function() {
+        $(this).prop('disabled', 'disabled');
+      });
+      $(form).find('select').each(function() {
+        $(this).prop('disabled', 'disabled');
+      });
+      $(form).find('button').each(function() {
+        $(this).prop('disabled', 'disabled');
+      });
+      var poll_uri = $(form).attr("poll");
+      var i = setInterval(function () {
+        $.ajax({
+          url: poll_uri,
+          dataType: 'json',
+          success: function (json) {
+            if (json.state <= 0) {
+              clearInterval(i);
+              var state = $(form).find('input.state-input');
+              $(state).val(json.state);
+              complete_row(form);
+            }
+          },
+          error: function () {
+            // on error, stop execution
+            clearInterval(i);
+          }
+        });
+      }, 1000);
+    }
+
+    function complete_row(form) {
+      var serial = $(form).find('input.serial-input');
+      var state = $(form).find('input.state-input');
+      var btn = $(form).find('button.btn-action');
+      var btn_i = $(btn).find('i');
+      $(btn_i).removeClass('fa-refresh fa-spin');
+      $(btn).removeClass('btn-primary btn-success btn-danger');
+      switch($(state).val()) {
+        case "-2":
+            // Provisioned
+            if($(serial).val().length > 0) {
+              $(btn).addClass('btn-success');
+              $(btn_i).addClass('fa-check');
+            } else {
+              $(btn).addClass('btn-primary');
+              $(btn_i).addClass('fa-save');
+            }
+            break;
+        case "-1":
+            // Error
+            $(btn).addClass('btn-danger');
+            $(btn_i).addClass('fa-warning');
+            break;
+        case "0":
+            // Clear
+            $(btn).addClass('btn-primary');
+            $(btn_i).addClass('fa-save');
+            break;
+        case "1":
+            // Scheduled
+            $(btn).addClass('btn-primary');
+            $(btn_i).addClass('fa-refresh fa-spin');
+            break;
+        case "2":
+            // Running
+            $(btn).addClass('btn-primary');
+            $(btn_i).addClass('fa-refresh fa-spin');
+            break;
+        default:
+            break;
+      }
+      $(form).find('input').each(function() {
+        $(this).prop('disabled', false);
+      });
+      $(form).find('select').each(function() {
+        $(this).prop('disabled', false);
+      });
+      $(form).find('button').each(function() {
+        $(this).prop('disabled', false);
+      });
+    }
+
+    function clear_row(form) {
+      // clear form data
+      var serial = $(form).find('input.serial-input');
+      var state = $(form).find('input.state-input');
+      $(serial).val("");
+      $(state).val("0");
+      $(state).prop('disabled', false);
+      // reset components
+      var btn = $(form).find('button.btn-action');
+      var btn_i = $(btn).find('i');
+      $(btn).removeClass('btn-success btn-danger');
+      $(btn).addClass('btn-primary');
+      $(btn_i).removeClass('fa-check fa-warning');
+      $(btn_i).addClass('fa-refresh fa-spin');
+      // save
+      var action_uri = $(form).attr("action");
+      $.post(action_uri, $(form).serialize());
+      poll_row(form);
+      // disable state
+      $(state).prop('disabled', 'disabled');
+    }
+
+    function poll_site(form) {
+      // disable all inputs
+      $('input').each(function() {
+        $(this).prop('disabled', 'disabled');
+      });
+      $('select').each(function() {
+        $(this).prop('disabled', 'disabled');
+      });
+      $('button').each(function() {
+        $(this).prop('disabled', 'disabled');
+      });
+      // update sync button
+      var btn = $(form).find('button.btn-sync');
+      var btn_i = $(btn).find('i');
+      $(btn_i).addClass('fa-spin');
+      // poll site for sync status update
+      var poll_uri = $(form).attr("poll");
+      var i = setInterval(function () {
+        $.ajax({
+          url: poll_uri,
+          dataType: 'json',
+          success: function (json) {
+            if (json.sync_state <= 0) {
+              clearInterval(i);
+              location.reload();
+            }
+          },
+          error: function () {
+            // on error, stop execution
+            clearInterval(i);
+            location.reload();
+          }
+        });
+      }, 1000);
+    }
+
+    $().ready(function() {
+      $('input.state-input').each(function() {
+        var state = $(this).val();
+        var form = $(this).closest("form");
+        switch(state) {
+          case "-2":  // provisioned
+            break;
+          case "-1":  // error
+            break;
+          case "0":   // clear
+            break;
+          case "1":   // scheduled
+            poll_row(form);
+            break;
+          case "2":   // running
+            poll_row(form);
+            break;
+          default:
+            break;
+        }
+      });
+      if($("button.btn-sync").attr("disabled")) {
+        var form = $("form.sync-form");
+        poll_site(form);
+      }
+      $("form.sync-form").on("submit", function() {
+        var form = $("form.sync-form");
+        var action_uri = $(form).attr("action");
+        $.post(action_uri, $(form).serialize());
+        poll_site(form);
+        return false;
+      });
+      $('form.phone-form').on("submit", function() {
+        return false;
+      });
+      $('.btn-clear-serial').on("click", function() {
+        clear_row($(this).closest("form"));
+      });
+      $('.serial-input').on("change", function() {
+        var input = $(this);
+        var device_type = $(this).parent().parent().parent().find('select.device-type-input');
+        $(device_type).find('option').each(function() {
+          var skus = $(this).attr('skus');
+          if(skus !== undefined) {
+            skus = skus.split(",");
+            if(skus.indexOf($(input).val()) >= 0) {
+              $(this).prop('selected', true);
+              $(input).val("");
+              $(input).focus();
+              return false;
+            }
+          }
+        });
+
+        var device_type_val = $(this).parent().parent().parent().find('select.device-type-input :selected').val();
+        if(device_type_val == "") {
+          $(input).val("");
+          $(input).focus();
+        } else {
+          if($(input).val().length > 0) {
+            var format = $(this).parent().parent().parent().find('select.device-type-input :selected').attr('format');
+            if(format !== undefined) {
+              var format_regex = new RegExp(format, "i");
+              if(format_regex.exec($(input).val())) {
+                // check if another serial exists first
+                var mac_count = 0;
+                $('input.serial-input').each(function() {
+                  if($(this).val() == $(input).val()) {
+                    mac_count++;
+                  }
+                });
+                if(mac_count < 2) {
+                  var form = $(input).closest("form")
+                  var action_uri = $(form).attr("action");
+                  $.post(action_uri, $(form).serialize());
+                  poll_row(form);
+                  $(this).closest('div.table-row').next().find('input.serial-input').focus();
+                } else {
+                  $(input).val("");
+                  $(input).focus();
+                  return false;
+                }
+              } else {
+                $(input).val("");
+                $(input).focus();
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+{% endblock javascript %}

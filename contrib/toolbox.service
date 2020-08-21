@@ -1,0 +1,26 @@
+[Unit]
+Description=Steward Web Application
+Requires=nginx.service postgresql.service
+Before=nginx.service
+After=postgresql.service
+
+[Service]
+WorkingDirectory=/var/html/steward
+PIDFile=/run/toolbox.pid
+Type=forking
+KillMode=process
+Restart=always
+ExecStart=/var/html/toolbox/venv/bin/gunicorn                   \
+          --workers 4                                           \
+          --group ops                                           \
+          --user ops                                            \
+          --bind 127.0.0.1:8000                                 \
+          --pid /run/toolbox.pid                                \
+          --pythonpath=/var/html/toolbox                        \
+          --name toolbox                                        \
+          --error-logfile=/var/log/toolbox.error                \
+          --daemon                                              \
+          toolbox.wsgi
+
+[Install]
+WantedBy=multi-user.target

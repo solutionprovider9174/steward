@@ -1,0 +1,62 @@
+{% extends 'tools/base.html' %}
+
+{% block tool_content %}
+  <h1 class="page-header">Call Park/Pickup Configurator</h1>
+  <div>
+    <h2 class="text-primary"><i class="fa fa-info"></i> Documentation</h2>
+    <p>This tool configures user and device settings to support the Call Park/Pickup services. It can be run on either a Service Provider or an Enterprise.
+       When run on a Service Provider, a Group is required. When running on an Enterprise, a group is optional. <strong>If no group is provided, it is assumed that all groups
+       require action within the Enterprise.</strong>
+     </p>
+    <h4>Summary of actions:</h4>
+    <pre>
+for each group:
+  GroupCallPickupGetInstanceListRequest
+  GroupCallPickupGetAvailableUserListRequest
+  if there are no Pickup Groups:
+    if len(pickup_groups) > 0:
+      GroupCallPickupAddInstanceRequest(provider_id, group_id, 'Default', userId=available_users)
+  # Add tags to all user devices which could have a Pickup Group
+  for each available user:
+      # Get Line Ports
+      UserGetRequest19
+      UserSharedCallAppearanceGetRequest16sp2
+      # add tags to devices
+      tags = [
+          {'tag_name': '%SK5-Action%', 'tag_value': '!grppark'},
+          {'tag_name': '%SK5-Active%', 'tag_value': '1'},
+          {'tag_name': '%SK5-Enable%', 'tag_value': '1'},
+          {'tag_name': '%SK5-Label%',  'tag_value': 'Park'},
+          {'tag_name': '%SK6-Action%', 'tag_value': '!retrieve'},
+          {'tag_name': '%SK6-Enable%', 'tag_value': '1'},
+          {'tag_name': '%SK6-Idle%',   'tag_value': '1'},
+          {'tag_name': '%SK6-Label%',  'tag_value': 'Retrieve'},
+      ]
+      for each device:
+        GroupAccessDeviceCustomTagGetListRequest
+        for each tag to add:
+          # one of the following requests...
+          GroupAccessDeviceCustomTagModifyRequest
+          GroupAccessDeviceCustomTagAddRequest
+          ServiceProviderAccessDeviceCustomTagModifyRequest
+          ServiceProviderAccessDeviceCustomTagAddRequest
+        GroupCPEConfigRebuildConfigFileRequest or ServiceProviderCPEConfigRebuildDeviceConfigFileRequest
+</pre>
+
+    <h2 class="text-danger"><i class="fa fa-warning"></i> Invoke</h2>
+    <div class="well">
+      <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p><label></label><input id="submit" type="submit" value="Run"/></p>
+      </form>
+    </div>
+  </div>
+{% endblock tool_content %}
+
+{% block javascript %}
+  {{ block.super }}
+  {% if form.javascript %}
+    <script src="{{ form.javascript }}"></script>
+  {% endif %}
+{% endblock javascript %}

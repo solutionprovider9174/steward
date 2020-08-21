@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-3 col-md-2 sidebar">
+      <!-- Tools -->
+      <ul class="nav nav-sidebar">
+        <li class="header">Tools</li>
+        {% if perms.tools.process_call_park_pickup_configurator_exec %}
+          {% url 'tools:call-park-pickup-configurator' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Call Park/Pickup Configurator
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+                {% endif %}
+              </a>
+          </li>
+        {% endif %}
+        {% if perms.tools.process_dect_configurator_exec %}
+          {% url 'tools:dect-configurator' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              DECT Configurator
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+                {% endif %}
+              </a>
+          </li>
+        {% endif %}
+        {% if perms.tools.process_device_specific_migration_exec %}
+          {% url 'tools:device-specific-migration-tool' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Device Specific Migration
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+                {% endif %}
+              </a>
+          </li>
+        {% endif %}
+        {% if perms.tools.process_fraud_compliance_reset_exec %}
+          {% url 'tools:fraud-compliance-reset-tool' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Fraud Compliance Reset
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endif %}
+        {% if perms.tools.process_lab_rebuild_exec %}
+          {% url 'tools:lab-rebuild-tool' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Lab Rebuild
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endif %}
+        {% if perms.tools.process_ptt_configurator_exec %}
+          {% url 'tools:push-to-talk-configurator' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Push To Talk Configurator
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endif %}
+        {% if perms.tools.process_speed_dial_configurator_exec %}
+          {% url 'tools:speed-dial-configurator' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Speed Dial 100 Configurator
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endif %}
+        {% if perms.tools.process_trunk_user_audit_exec %}
+          {% url 'tools:trunk-user-audit' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Trunk User Audit
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endif %}
+        {% if perms.tools.process_busy_lamp_field_fixup_exec %}
+          {% url 'tools:busy-lamp-field-fixup' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Busy Lamp Field (BLF) Fixup
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+      <!-- Reports -->
+      <ul class="nav nav-sidebar">
+        <li class="header">Reports</li>
+        {% if perms.tools.process_firmware_report_exec %}
+          {% url 'tools:firmware-report' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Firmware Report
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endif %}
+        {% if perms.tools.process_registration_report_exec %}
+          {% url 'tools:registrations-report' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Registrations
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endif %}
+        {% if perms.tools.process_registration_by_type_exec %}
+          {% url 'tools:registration-by-type-report' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Registration by Type
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endif %}
+        {% if perms.tools.process_tag_report_exec %}
+          {% url 'tools:tag-report' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Tag Report
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+      <!-- Jobs -->
+      <ul class="nav nav-sidebar">
+        <li class="header">Jobs</li>
+        {% url 'tools:process-list' as the_url %}
+        <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+          <a href="{{ the_url }}">
+            All Jobs
+            {% if request.get_full_path == the_url %}
+              <span class="sr-only">(current)</span>
+            {% endif %}
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      {% block tool_content %}{% endblock tool_content %}
+    </div>
+  </div>
+{% endblock content %}

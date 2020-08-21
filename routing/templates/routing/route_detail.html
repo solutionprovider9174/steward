@@ -1,0 +1,94 @@
+{% extends 'routing/base.html' %}
+{% load humanize %}
+
+{% block tool_content %}
+  <h1 class="page-header">
+    <div class="btn-group pull-right" role="group">
+      <a href="{% url 'routing:route-update' object.id %}" class="object-edit btn btn-default"><i class="fa fa-fw fa-edit"></i> Edit</a>
+      <a href="{% url 'routing:route-delete' object.id %}" class="object-delete btn btn-danger {% if object.numbers.count %}disabled{% endif %}"><i class="fa fa-fw fa-times"></i> Delete</a>
+    </div>
+    Route {{ object.name }}
+  </h1>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Details</h3>
+    </div>
+    <table class="table table-bordered table-striped table-hover">
+      <tbody>
+        <tr>
+          <td class="col-lg-3">Name</td>
+          <td class="col-lg-9">{{ object.name }}</td>
+        </tr>
+        <tr>
+          <td class="col-lg-3">Type</td>
+          <td class="col-lg-9">{{ object.get_type_display }}</td>
+        </tr>
+        <tr>
+          <td>Trunkgroup</td>
+          <td>{{ object.trunkgroup }}</td>
+        </tr>
+        {% if object.type == object.TYPE_CHOICE_INTERNAL %}
+          <tr>
+            <td>Numbers</td>
+            <td>{{ object.numbers.count|intcomma }}</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if object.type == object.TYPE_CHOICE_INTERNAL %}
+    <div>
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#records" aria-controls="records" role="tab" data-toggle="tab">ENUM Records</a></li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="records">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">
+                &nbsp;
+                <div class="pull-right">
+                  <a href="#" class="btn btn-xs btn-default"><i class="fa fa-fw fa-plus"></i> New</a>
+                </div>
+              </h3>
+            </div>
+            <table class="table table-bordered table-striped table-hover">
+              <tbody>
+                <tr>
+                  <th>Order</th>
+                  <th>Preference</th>
+                  <th>Flags</th>
+                  <th>Service</th>
+                  <th>Regex</th>
+                  <th>Replacement</th>
+                  <th></th>
+                </tr>
+              </tbody>
+              <tbody>
+                {% for record in object.records.all %}
+                  <tr>
+                    <td>{{ record.order}}</td>
+                    <td>{{ record.preference }}</td>
+                    <td>{{ record.flags }}</td>
+                    <td>{{ record.service }}</td>
+                    <td>{{ record.regex }}</td>
+                    <td>{{ record.replacement }}</td>
+                    <td></td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="7">No records</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock tool_content %}

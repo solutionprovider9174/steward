@@ -1,0 +1,35 @@
+{% extends 'tools/base.html' %}
+
+{% block tool_content %}
+  <h1 class="page-header">Busy Lamp Field (BLF) Fixup</h1>
+  <div>
+    <h2 class="text-primary"><i class="fa fa-info"></i> Documentation</h2>
+    <p>
+      This tool ensures Busy Lamp Field (BLF) is correctly configured for a user only if they have monitored users.
+      <strong>If no group is provided, it is assumed that all groups require action.</strong>
+    </p>
+    <h4>Summary of actions:</h4>
+    <pre>
+for each user:
+    UserBusyLampFieldGetRequest16sp2
+    if listUri exists and monitoredUserTable is empty then:
+        Clear listUri with UserBusyLampFieldModifyRequest
+    </pre>
+
+    <h2 class="text-danger"><i class="fa fa-warning"></i> Invoke</h2>
+    <div class="well">
+      <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p><label></label><input id="submit" type="submit" value="Run"/></p>
+      </form>
+    </div>
+  </div>
+{% endblock tool_content %}
+
+{% block javascript %}
+  {{ block.super }}
+  {% if form.javascript %}
+    <script src="{{ form.javascript }}"></script>
+  {% endif %}
+{% endblock javascript %}

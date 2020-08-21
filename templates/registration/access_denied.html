@@ -1,0 +1,17 @@
+{% extends "base_guest.html" %}
+
+{% block content %}
+    <div class="span4"></div>
+    <div class="span4">
+        <div class="container">
+
+            <div class="alert alert-danger"><strong>Error!</strong> Access Forbidden </div>
+
+            <div class="text-center">
+                <h3>If you believe this is in error, please contact your supervisor or file a bug report.</h3>
+                <h4></p><a href="{% url "index" %}">Click here to go home.</a></h4>
+            </div>
+        </div>
+    </div>
+    <div class="span4"></div>
+{% endblock content %}

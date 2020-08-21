@@ -1,0 +1,23 @@
+{% extends "base_guest.html" %}
+
+{% block content %}
+    <div class="span5"></div>
+    <div id="login" class="span2">
+        <div class="container">
+            {% if form.errors %}
+            <div class="alert alert-danger"><strong>Warning!</strong> Authentication failed, try a different username or password.</div>
+            {% endif %}
+
+            <form action='' method='post' class="form-signin" autocomplete="off">
+                {% csrf_token %}
+                <h2 class="form-signin-heading">Please sign in</h2>
+                <input type="text" class="form-control" name="username" id="username" placeholder="Username" autofocus>
+                <input type="password" class="form-control" name="password" value="" id="password" placeholder="Password">
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                <input type="hidden" name="next" value="{{ next }}" />
+            </form>
+        </div>
+    </div>
+    <div class="span5"></div>
+    <script>$('#username').focus();</script>
+{% endblock content %}

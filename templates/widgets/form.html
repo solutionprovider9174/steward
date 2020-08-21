@@ -1,0 +1,102 @@
+{% load sniplates %}
+
+{% block _errors %}
+  {% if errors %}
+    <ul class="errorlist">
+      {% for error in errors %}
+        <li class="error">{{ error }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}
+
+{% block _group %}
+  <div class="form-group {{ errors|yesno:'has-error,' }}" id="group_{{ id_for_label }}">
+    <label class="control-label {{ required|yesno:'requiredField,' }}" for="{{ id_for_label }}">
+      {{ label }}
+      {% if required %}<span class="asteriskField">*</span>{% endif %}
+    </label>
+    {{ content }}
+    {% for msg in errors %}
+      <span class="help-block">{{ msg }}</span>
+    {% endfor %}
+  </div>
+{% endblock _group %}
+
+{% block _field %}
+  {% nested_widget ':_group' %}
+    <input name="{{ html_name }}" type="{{ type|default:'text' }}" id="{{ id_for_label }}" class="form-control" value="{{ form_field.value|default_if_none:'' }}" placeholder="{{ placeholder|default:label }}">
+  {% endnested %}
+{% endblock _field %}
+
+{% block TextInput %}{% reuse '_field' %}{% endblock TextInput %}
+{% block IntegerField %}{% reuse '_field' type='number' %}{% endblock IntegerField %}
+{% block EmailInput %}{% reuse '_field' type='email' %}{% endblock EmailInput %}
+{% block PasswordInput %}{% reuse '_field' type='password' value='' %}{% endblock PasswordInput %}
+{% block URLInput %}{% reuse '_field' %}{% endblock URLInput %}
+{% block FloatField %}
+  {% nested_widget ':_group' %}
+    <input name="{{ html_name }}" id="{{ id_for_label }}" type='number' step='0.01' class="form-control" value="{{ value|default_if_none:'' }}" placeholder="{{ placeholder|default:label }}">
+  {% endnested %}
+{% endblock FloatField %}
+{% block CheckboxInput %}
+  <div class="checkbox">
+    <label class="col-md-offset-2" for="{{ id_for_label }}">
+      <input name="{{ html_name }}" id="{{ id_for_label }}" type="checkbox" class="checkboxinput checkbox" {{ form_field.value|yesno:'checked,' }}/> {{ label }}
+    </label>
+  </div>
+{% endblock CheckboxInput %}
+{% block TypedChoiceField %}
+  {% nested_widget ':_group' %}
+    <select name="{{ html_name }}" class="form-control selectpicker" data-size="10" data-live-search="true" data-style="btn-white">
+      {% for val, display in choices %}
+        <option value="{{ val }}" {% if val in value %}selected{% endif %}>{{ display }}</option>
+      {% endfor %}
+    </select>
+  {% endnested %}
+{% endblock TypedChoiceField %}
+{% block Select %}
+  {% nested_widget ':_group' %}
+    <select name="{{ html_name }}" id="{{ id }}" class="select form-control" {{ widget.attrs|flatattrs }}>
+      {% for val, display in choices %}
+        <option value="{{ val }}" {% if val == value|default:None %}selected{% endif %}>{{ display }}</option>
+      {% endfor %}
+    </select>
+  {% endnested %}
+{% endblock Select %}
+{% block SelectMultiple %}
+  {% nested_widget ':_group' %}
+    <select multiple name="{{ html_name }}" id="{{ id }}" class="select form-control" {{ widget.attrs|flatattrs }}>
+      {% for val, display in choices %}
+        <option value="{{ val }}" {% if val in value|default:None %}selected{% endif %}>{{ display }}</option>
+      {% endfor %}
+    </select>
+  {% endnested %}
+{% endblock SelectMultiple %}
+{% block RadioSelect %}
+  {% nested_widget ':_group' %}
+    {% for val, display in choices %}
+      <label>
+        <input type="radio" name="{{ html_name }}" id="id_{{ html_name }}_{{ forloop.counter0 }}" value="{{ val }}" {% if val == value|default:None %}checked{% endif %}>
+        {{ display }}
+      </label>
+    {% endfor %}
+  {% endnested %}
+{% endblock %}
+{% block Textarea %}
+  {% nested_widget ':_group' %}
+    <textarea name="{{ html_name }}" class="form-control" id="{{ id_for_label }}" placeholder="{{ placeholder|default:label }}" {{ widget.attrs|flatattrs }}>{{ value|default_if_none:'' }}</textarea>
+  {% endnested %}
+{% endblock Textarea %}
+{% block submit_button %}
+  <div class="pull-right">
+    {% if cancel|default_if_none:True %}
+      <a href="javascript:window.history.back();" class="btn btn-default">Cancel</a>
+    {% endif %}
+    {% if form.instance.pk %}
+      <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
+    {% else %}
+      <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> {{ text|default:"Create" }}</button>
+    {% endif %}
+  </div>
+{% endblock submit_button %}

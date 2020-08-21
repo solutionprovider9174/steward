@@ -1,0 +1,15 @@
+{% extends 'routing/base.html' %}
+{% load humanize %}
+
+{% block tool_content %}
+  <h1 class="page-header">Delete Fraud Bypass for {{ object.number }}</h1>
+  <div class="alert alert-danger" role="alert">
+    <i class="fa fa-2x fa-warning pull-left"></i> <strong>DANGER!</strong>
+    Deleting a number from the Fraud Bypass list will affect the calls this customer may call.
+  </div>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p><label></label><input id="submit" type="submit" value="Confirm Delete"/></p>
+  </form>
+{% endblock tool_content %}

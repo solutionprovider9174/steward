@@ -1,0 +1,14 @@
+{% extends "base_guest.html" %}
+
+{% block content %}
+    <div class="span4"></div>
+    <div class="span4">
+        <div class="container">
+            <div class="form-signin">
+                <h3>You have been logged out.</h3>
+                <p>You have been securely logged out. <a href="{% url 'login' %}">Sign in again here.</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="span4"></div>
+{% endblock content %}

@@ -1,0 +1,72 @@
+{% extends 'tools/base.html' %}
+
+{% block tool_content %}
+  <h1 class="page-header">Device Specific Migration</h1>
+  <div>
+    <h2 class="text-primary"><i class="fa fa-info"></i> Documentation</h2>
+    <p>This tool migrates BroadWorks Polycom Devices from their generic form to their respective specific Device Type based upon the current registered User Agent.
+       When run on a Service Provider, a Group is required. When running on an Enterprise, a group is optional. <strong>If no group is provided, it is assumed that all groups
+       within the Enterprise will be migrated.</strong><br/><br/>
+       This process involved rebuilding Devices and assigned Lines and Shared Call Appearances on a device. <strong>This is service impacting for the respective customer.</strong>
+     </p>
+    <h4>Summary of actions:</h4>
+    <pre>
+for each group:
+    GroupAccessDeviceGetListRequest
+    for device in devices:
+        if device_type == 'Polycom':
+            GroupAccessDeviceGetUserListRequest
+            for user in users:
+                UserGetRegistrationListRequest
+            # Match device type based upon registered User Agent
+            # Fail if not registered or no User Agent
+            GroupAccessDeviceGetRequest18sp1
+            # Generate new device info
+            # Ensure existing device has a primary line/port
+            GroupAccessDeviceGetUserListRequest
+            GroupAccessDeviceModifyUserRequest
+            # Create new device
+            GroupAccessDeviceAddRequest14
+            # Copy device tags to new device
+            GroupAccessDeviceCustomTagGetListRequest
+            for tag in device_tags:
+                GroupAccessDeviceCustomTagAddRequest
+            # Send existing device a new config file to redirect to the new device &amp; reboot
+            GroupAccessDeviceFileModifyRequest14sp8
+            GroupCPEConfigRebuildDeviceConfigFileRequest
+            GroupAccessDeviceResetRequest
+            # Move line/ports from old to new device
+            for line_port in line_ports:
+                if line_port['Endpoint Type'] == 'Primary':
+                    # Remove Primary Line/Port from previous device
+                    UserModifyRequest17sp4
+                    # Add Primary Line/Port to new device
+                    UserModifyRequest17sp4
+                elif line_port['Endpoint Type'] == 'Shared Call Appearance':
+                    # Remove SCA from previous device
+                    UserSharedCallAppearanceDeleteEndpointListRequest14
+                    # Add SCA to new device
+                    UserSharedCallAppearanceAddEndpointRequest14sp2
+            # Set new device's primary line/port (if necessary)
+            GroupAccessDeviceGetUserListRequest
+            GroupAccessDeviceModifyUserRequest
+            # Success!</pre>
+
+    <h2 class="text-danger"><i class="fa fa-warning"></i> Invoke</h2>
+    <p><strong class="text-danger">WARNING This will disrupt service.</strong></p>
+    <div class="well">
+      <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p><label></label><input id="submit" type="submit" value="Run"/></p>
+      </form>
+    </div>
+  </div>
+{% endblock tool_content %}
+
+{% block javascript %}
+  {{ block.super }}
+  {% if form.javascript %}
+    <script src="{{ form.javascript }}"></script>
+  {% endif %}
+{% endblock javascript %}

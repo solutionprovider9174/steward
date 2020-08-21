@@ -1,0 +1,39 @@
+{% extends 'routing/base.html' %}
+
+{% block tool_content %}
+  <h1 class="page-header">Recent Outbound Carrier Override History</h1>
+  <table class="table table-bordered table-striped table-hover">
+    <thead>
+      <tr>
+        <th class="">Time</th>
+        <th class="">User</th>
+        <th class="4" nowrap>Number</th>
+        <th class="col-lg-8">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for object in object_list %}
+        <tr>
+          <td nowrap>{{ object.modified }}</td>
+          <td nowrap>{{ object.user.get_full_name }}</td>
+          <td nowrap>{{ object.number }}</td>
+          <td>{{ object.action }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="4">No history yet!</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if is_paginated %}
+    <nav>
+      <ul class="pager">
+        <li class="previous {% if not page_obj.has_previous %}disabled{% endif %}"><a href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}"><span aria-hidden="true">&larr;</span> Previous</a></li>
+        <li>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</li>
+        <li class="next {% if not page_obj.has_next %}disabled{% endif %}"><a href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}">Next <span aria-hidden="true">&rarr;</span></a></li>
+      </ul>
+    </nav>
+  {% endif %}
+{% endblock tool_content %}

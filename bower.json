@@ -1,0 +1,27 @@
+{
+  "name": "steward",
+  "authors": [
+    "JJ Wager"
+  ],
+  "description": "description",
+  "main": "",
+  "moduleType": [],
+  "license": "None",
+  "homepage": "\"\"",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "steward/static/bower",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.4.1",
+    "font-awesome": "~4.5.0",
+    "jquery": "^3.5.1",
+    "Chart.js": "^1.0.2",
+    "js-cookie": "^2.1.2"
+  },
+  "private": true
+}

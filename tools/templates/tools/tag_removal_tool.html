@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1 class="page-header">Tag Removal</h1>
+  <div>
+    <h2 class="text-primary"><i class="fa fa-info"></i> Documentation</h2>
+    <p>This tool removes the specified tags on all devices in the Provider/Group selection.</p>
+    <h4>Summary of actions:</h4>
+    <pre>...</pre>
+
+    <h2 class="text-danger"><i class="fa fa-warning"></i> Invoke</h2>
+    <p><strong class="text-danger">WARNING This will disrupt service.</strong></p>
+    <div class="well">
+      <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p><label></label><input id="submit" type="submit" value="Run"/></p>
+      </form>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block javascript %}
+  {{ block.super }}
+  {% if form.javascript %}
+    <script src="{{ form.javascript }}"></script>
+  {% endif %}
+{% endblock javascript %}

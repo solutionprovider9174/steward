@@ -1,0 +1,48 @@
+{% extends 'sansayvcm_client/index.html' %}
+
+{% block tool_content %}
+<div class="col-md-8">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Sansay VCM Request Test</div>
+        <div class="panel-body">
+            <form method="post" class="form-horizontal">
+            {% csrf_token %}
+            <div class="form_group">
+                <div class="row" style="padding: 3px 0;">
+                    <label for="server" class="col-sm-3 control-label">{{ form.server.label }}</label>
+                    <div class="col-sm-9">
+                        {{ form.server }}
+                    </div>
+                </div>
+            </div>
+            <div class="form_group">
+                <div class="row" style="padding: 3px 0;">
+                    <label for="cluster" class="col-sm-3 control-label">{{ form.cluster.label }}</label>
+                    <div class="col-sm-9">
+                        {{ form.cluster }}
+                    </div>
+                </div>
+            </div>
+            <div class="form_group">
+                <div class="row" style="padding: 3px 0;">
+                    <label for="did" class="col-sm-3 control-label">{{ form.did.label }}</label>
+                    <div class="col-sm-9">
+                        {{ form.did }}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row" style="padding: 3px 0;">
+                    <label class="col-sm-3 control-label"></label>
+                    <div class="col-sm-9">
+                        <button type="submit" class="btn btn-primary border" style="margin-left: 6px;">Send Request</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="col-md-4"></div>
+
+{% endblock tool_content %}
+

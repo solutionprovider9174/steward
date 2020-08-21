@@ -1,0 +1,162 @@
+{% extends 'tools/base.html' %}
+{% load sniplates %}
+{% load staticfiles %}
+
+{% block tool_content %}
+  {% load_widgets form="widgets/form.html" %}
+  {% load_widgets formset="tools/form_widget_configurator.html" %}
+  <h1 class="page-header">
+    DECT Configurator
+  </h1>
+  <div>
+    <h2 class="text-primary"><i class="fa fa-info"></i> Documentation</h2>
+    <p>Configures a Polycom device for a DECT add-on phone.</p>
+
+    <h2 class="text-danger"><i class="fa fa-warning"></i> Invoke</h2>
+    <div class=" well">
+      <div id="id_form_template" style="display:none;">
+        {% with formset.empty_form as f %}
+          <div class="row form-row formset-template">
+            {% for field in f %}
+              {% form_field field alias="formset" %}
+            {% endfor %}
+            {% widget "formset:button" text="" icon="fa-times" class="remove-row" %}
+          </div>
+        {% endwith %}
+      </div>
+      <form class="formset" method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+          {% form_field field %}
+        {% endfor %}
+        <hr/>
+        {{ formset.management_form }}
+        <div class="formset-rows">
+          {% for f in formset %}
+            <div class="row form-row">
+              {% for field in f %}
+                {% form_field field alias="formset" %}
+              {% endfor %}
+              {% widget "formset:button" text="" icon="fa-times" class="remove-row" %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="pull-right">
+          {% widget "formset:button" text="Sync" icon="fa-refresh" class="btn-info sync" %}
+          {% widget "formset:button" text="Add Row" icon="fa-plus" class="btn-info add-row" %}
+          {% widget "formset:button" text="Run" icon="fa-fighter-jet" class="btn-primary submit" type="submit" %}
+        </div>
+        <div class="clearfix"/>
+      </form>
+    </div>
+  </div>
+
+  <!-- Import Modal -->
+  <div class="modal fade" id="import_parameters" tabindex="-1" role="dialog" aria-labelledby="id_import_parameters_label">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="id_import_parameters_label">Import Parameters</h4>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-info" role="alert"><i class="fa fa-fw fa-warning"></i> <strong>Info:</strong> This form accepts data from the Parameters section of a completed Job.</div>
+          <div class="number-form">
+            <div class="form-group">
+              <label>
+                Parameter Data
+              </label>
+              <textarea id="id_parameters" class="form-control" rows="5"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn-import number-form btn btn-primary">Import Parameters</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock tool_content %}
+
+{% block javascript %}
+  {{ block.super }}
+  <script>
+    function add_row() {
+      var totalForms = $('#id_form-TOTAL_FORMS');
+      var maxForms = $('#id_form-MAX_NUM_FORMS');
+      var minForms = $('#id_form-MIN_NUM_FORMS');
+      var template = $('#id_form_template').contents();
+      template.clone().appendTo("form > .formset-rows");
+      $("form > .formset-rows > .form-row:last").removeClass('formset-template');
+      var forms = $('.form-row').not('.formset-template');
+      $("form > .formset-rows > .form-row:last").html(function(index,html){
+        return html.replace(/__prefix__/g,(forms.length-1));
+      });
+      var forms = $('.form-row').not('.formset-template');
+      totalForms.val(forms.length);
+    }
+
+    function renumber_element(element, idx) {
+      if($(element).attr('id')) {
+        $(element).attr('id', $(element).attr('id').replace(/-\d+-/g,'-'+idx+'-'));
+      }
+      if($(element).attr('name')) {
+        $(element).attr('name', $(element).attr('name').replace(/-\d+-/g,'-'+idx+'-'));
+      }
+      $(element).children().each(function() {
+        renumber_element($(this), idx);
+      });
+    }
+
+    function remove_row() {
+      console.log('remove row');
+      $(this).parent('.form-row').remove();
+      var forms = $('.form-row').not('.formset-template');
+      var totalForms = $('#id_form-TOTAL_FORMS');
+      var maxForms = $('#id_form-MAX_NUM_FORMS');
+      var minForms = $('#id_form-MIN_NUM_FORMS');
+      totalForms.val(forms.length);
+
+      $(forms).each(function(idx) {
+        renumber_element($(this), idx);
+      });
+    }
+
+    function sync_handsets() {
+      var dectLookupUrl = "{% url 'api:tools-dect-lookup' %}";
+      $.getJSON({
+        method: "POST",
+        url: dectLookupUrl,
+        data: JSON.stringify({provider_id: $('#id_provider_id').val(), group_id: $('#id_group_id').val(), device_name: $('#id_device_name').val()}),
+        contentType: 'application/json',
+        processData: false,
+        success: function(data) {
+          console.log(JSON.stringify(data));
+          $('.formset-rows').html('');
+          for (i in data) {
+            var item = data[i];
+            add_row();
+            $("form > .formset-rows > .form-row:last input").eq(0).val(item.handset);
+            $("form > .formset-rows > .form-row:last input").eq(1).val(item.line);
+            $("form > .formset-rows > .form-row:last input").eq(2).val(item.user_id);
+            $("form > .formset-rows > .form-row:last input").eq(3).val(item.lineport);
+          }
+        }
+      });
+    }
+
+    $().ready(function() {
+      $(document.body).on('click', '.submit', function() {
+        $("input").prop("disabled", false);
+      });
+      $(document.body).on('click', '.add-row', add_row);
+      $(document.body).on('click', '.remove-row', remove_row);
+      $('.sync').on('click', sync_handsets);
+      $('#id_device_name').on('focusout', sync_handsets);
+    });
+  </script>
+  {% if form.javascript %}
+    <script src="{{ form.javascript }}"></script>
+  {% endif %}
+{% endblock javascript %}

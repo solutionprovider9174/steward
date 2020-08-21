@@ -1,0 +1,23 @@
+Metadata-Version: 1.1
+Name: django-sniplates
+Version: 0.7.0
+Summary: Efficient template macro sets for Django
+Home-page: http://github.com/funkybob/django-sniplates
+Author: Curtis Maloney
+Author-email: curtis@tinbrain.net
+License: UNKNOWN
+Description: UNKNOWN
+Keywords: django,templates,forms
+Platform: UNKNOWN
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 2.2
+Classifier: Framework :: Django :: 3.0
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Requires: Django (>=2.2)

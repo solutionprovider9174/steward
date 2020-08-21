@@ -1,0 +1,27 @@
+{% extends 'routing/base.html' %}
+
+{% block tool_content %}
+  <h1 class="page-header">Remote Call Forward History for {{ called_number }}</h1>
+  <table class="table table-bordered table-striped table-hover">
+    <thead>
+      <tr>
+        <th class="">Time</th>
+        <th class="">User</th>
+        <th class="col-lg-12">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for object in history_list %}
+        <tr>
+          <td nowrap>{{ object.modified }}</td>
+          <td nowrap>{{ object.user.get_full_name }}</td>
+          <td>{{ object.action }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="3">No history yet!</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock tool_content %}

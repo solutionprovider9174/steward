@@ -1,0 +1,16 @@
+[Unit]
+Description=Steward Tool Workers
+Requires=postgresql.service redis.service
+After=postgresql.service redis.service
+
+[Service]
+WorkingDirectory=/var/html/steward
+Type=simple
+KillMode=process
+Restart=always
+ExecStart=/var/html/steward/venv/bin/python -O                  \
+          /var/html/steward/manage.py rqworker tool             \
+          --pythonpath=/var/html/steward 
+
+[Install]
+WantedBy=multi-user.target

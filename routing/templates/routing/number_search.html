@@ -1,0 +1,425 @@
+{% extends 'routing/base.html' %}
+{% load humanize %}
+
+{% block tool_content %}
+  <h1 class="page-header">
+    <div class="pull-right">
+      <div class="btn-group" role="group">
+        <a href="{% url 'routing:number-history' %}" class="number-add btn btn-default"><i class="fa fa-fw fa-book"></i> History</a>
+        {% if perms.routing.change_number %}
+          <button class="number-add btn btn-default" data-toggle="modal" data-target="#add_number"><i class="fa fa-fw fa-plus"></i> Add</button>
+        {% endif %}
+      </div>
+    </div>
+    Numbers <span class="badge"><span id="number_count">0</span> / {{ number_count|intcomma }}</span>
+  </h1>
+
+  <div class="container-fluid">
+
+    <form id="form_query">
+      <div class="input-group">
+          <input type="text" class="form-control" placeholder="Number search" id="id_query">
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="submit" id="btn_query"><i class="fa fa-fw fa-search"></i></button>
+          </span>
+      </div>
+    </form>
+
+    <br/>
+
+    <table id="results" class="table table-bordered table-striped table-hover">
+      <thead>
+        <tr>
+          <th class="col-lg-6">Number</th>
+          <th class="col-lg-6">Route</th>
+          <th/>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <nav>
+      <ul class="pager">
+        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Previous</a></li>
+        <li id="page_count"></li>
+        <li class="next disabled"><a href="#">Next <span aria-hidden="true">&rarr;</span></a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Add Number Modal -->
+  <div class="modal fade" id="add_number" tabindex="-1" role="dialog" aria-labelledby="id_add_number_label">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="id_add_number_label">Add Numbers</h4>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-info" role="alert"><i class="fa fa-fw fa-warning"></i> <strong>Warning!</strong> This will change routing of these numbers. Double check changes before submitting them!</div>
+          <div class="number-form">
+            <div class="form-group">
+              <label>
+                Phone Numbers
+              </label>
+              <textarea id="id_add_numbers" class="form-control" rows="5"></textarea>
+            </div>
+            <div class="form-group">
+              <label>
+                Route
+              </label>
+              <select id="id_add_routes_choice" class="form-control route_choices">
+                <option>--------</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="number-results hidden">
+          <table id="add_results" class="table table-bordered table-striped table-hover">
+            <thead>
+              <tr>
+                <th class="col-lg-8">Number</th>
+                <th class="col-lg-4">Result</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn-add-numbers number-form btn btn-primary">Add Numbers</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Number Modal -->
+  <div class="modal fade" id="edit_number" tabindex="-1" role="dialog" aria-labelledby="id_edit_number_label">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="id_edit_number_label">Edit <span></span></h4>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-warning" role="alert"><i class="fa fa-fw fa-warning"></i> <strong>Warning!</strong> This will change routing of this number. Double check changes before submitting them!</div>
+          <div class="number-form">
+            <div class="form-group">
+              <label>
+                Phone Number
+              </label>
+              <input id="id_edit_number" class="form-control" disabled>
+            </div>
+            <div class="form-group">
+              <label>
+                Route
+              </label>
+              <select id="id_edit_routes_choice" class="form-control route_choices">
+                <option>--------</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="number-results hidden">
+          <table id="edit_results" class="table table-bordered table-striped table-hover">
+            <thead>
+              <tr>
+                <th class="col-lg-8">Number</th>
+                <th class="col-lg-4">Result</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn-edit-number number-form btn btn-primary">Update Number</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Number Modal -->
+  <div class="modal fade" id="delete_number" tabindex="-1" role="dialog" aria-labelledby="id_delete_number_label">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="id_delete_number_label">Delete <span></span></h4>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger" role="alert"><i class="fa fa-fw fa-warning"></i> <strong>Warning!</strong> This will remove routing for this number. Double check changes before deleting this number!</div>
+          <div class="number-form">
+            <div class="form-group">
+              <label>
+                Phone Number
+              </label>
+              <input id="id_delete_number" class="form-control" disabled>
+            </div>
+            <div class="form-group">
+              <label>
+                Route
+              </label>
+              <select id="id_delete_routes_choice" class="form-control route_choices" disabled>
+                <option>--------</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="number-results hidden">
+          <table id="delete_results" class="table table-bordered table-striped table-hover">
+            <thead>
+              <tr>
+                <th class="col-lg-8">Number</th>
+                <th class="col-lg-4">Result</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn-delete-number number-form btn btn-primary">Delete Number</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock tool_content %}
+
+{% block javascript %}
+  {{ block.super }}
+  <script>
+    var permission_number_edit = {% if perms.routing.change_number %}true{% else %}false{% endif %};
+    var permission_number_delete = {% if perms.routing.delete_number %}true{% else %}false{% endif %};
+    var routes = {};
+    var page = 1;
+    var result_count = 0;
+    var limit = 50;
+    function buildResultHtml(cc, number, route) {
+      var routeName = routes[route];
+      var html = '<td class="col-number">'+number+'</td><td class="col-route-name">'+routeName+'</td><td style="min-width: 100px" nowrap><div class="btn-group" role="group">';
+      html += '<a href="/routing/numbers/'+cc+'/'+number+'/" class="btn btn-xs btn-default"><i class="fa fa-fw fa-book"></i><span class="sr-only">History</span></a>';
+      if (permission_number_edit) {
+        html += '<button type="button" class="number-edit btn btn-xs btn-primary" data-for="id_'+cc+'_'+number+'" data-cc="'+cc+'" data-number="'+number+'" data-route="'+route+'"><i class="fa fa-fw fa-edit"></i><span class="sr-only">Edit</span></button>';
+      }
+      if (permission_number_delete) {
+        html += '<button type="button" class="number-delete btn btn-xs btn-danger" data-for="id_'+cc+'_'+number+'" data-cc="'+cc+'" data-number="'+number+'" data-route="'+route+'"><i class="fa fa-fw fa-times"></i><span class="sr-only">Delete</span></button>';
+      }
+      html += '</div></td>';
+      return html;
+    }
+    function insertResult(cc, number, route) {
+      var html = '<tr id="id_'+cc+'_'+number+'">';
+      html += buildResultHtml(cc, number, route);
+      html += '</tr>';
+      $('#results > tbody').append(html);
+    }
+    function addNumber(cc, number, route) {
+      $.getJSON({
+        method: "PUT",
+        data: JSON.stringify(({cc: cc, number: number, route: route})),
+        url: "{% url 'api:routing-number-list' %}",
+        contentType: 'application/json',
+        processData: false,
+        success: function(data) {
+          insertAddResult(1, number, "Success");
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          insertAddResult(1, number, "Error");
+        }
+      });
+    }
+    function editNumber(cc, number, route) {
+      $.getJSON({
+        method: "PUT",
+        data: JSON.stringify(({cc: cc, number: number, route: route})),
+        url: "{% url 'api:routing-number-list' %}"+cc+"/"+number+"/",
+        contentType: 'application/json',
+        processData: false,
+        success: function(data) {
+          $('#id_'+cc+'_'+number).html(buildResultHtml(cc, number, route));
+          insertEditResult(1, number, "Success");
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          insertEditResult(1, number, "Error");
+        }
+      });
+    }
+    function deleteNumber(cc, number) {
+      $.getJSON({
+        method: "DELETE",
+        url: "{% url 'api:routing-number-list' %}"+cc+"/"+number+"/",
+        contentType: 'application/json',
+        processData: false,
+        success: function(data) {
+          $('#id_'+cc+'_'+number).remove();
+          insertDeleteResult(1, number, "Success");
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          insertDeleteResult(1, number, "Error");
+        }
+      });
+    }
+    function insertAddResult(cc, number, result) {
+      $('#add_results > tbody').append('<tr><td>'+number+'</td><td>'+result+'</td></tr>');
+    }
+    function insertEditResult(cc, number, result) {
+      $('#edit_results > tbody').append('<tr><td>'+number+'</td><td>'+result+'</td></tr>');
+    }
+    function insertDeleteResult(cc, number, result) {
+      $('#delete_results > tbody').append('<tr><td>'+number+'</td><td>'+result+'</td></tr>');
+    }
+    function updatePagination() {
+      number_pages = Math.ceil(result_count/limit);
+      $('#page_count').html('Page '+page+' / '+number_pages);
+      if (page > 1) {
+        $('.pager .previous').removeClass('disabled');
+      } else {
+        $('.pager .previous').addClass('disabled');
+      }
+      if (page*limit < result_count) {
+        $('.pager .next').removeClass('disabled');
+      } else {
+        $('.pager .next').addClass('disabled');
+      }
+    }
+    function search(query) {
+      var offset = (page-1) * limit;
+      $.ajax({
+        url: "{% url 'api:routing-number-list' %}?ordering=number&cc=1&limit=50&q="+query+"&offset="+offset,
+        success: function(data) {
+          $('#results > tbody').html('');
+          result_count = data.count;
+          $('#number_count').html(result_count).digits();
+          $(data.results).each(function(idx, item) {
+            var cc = item.cc;
+            var number = item.number;
+            var route = item.route;
+            insertResult(cc, number, route);
+          });
+          updatePagination();
+          history.pushState({q: query, p: page}, "Steward Number Search", "/routing/numbers/search?q="+query+"&p="+page);
+        }
+      });
+    }
+    function parseNumbers(data) {
+      var nanpa_pattern = /^[2-9]\d{2}[2-9]\d{2}\d{4}$/;
+      var nanpa_multi_pattern = /^[2-9]\d{2}[2-9]\d{2}\d{4}-[2-9]\d{2}[2-9]\d{2}\d{4}$/;
+      var numbers = {'valid': [], 'invalid': []};
+
+      var lines = data.split('\n');
+      for(i in lines) {
+        var line = lines[i];
+        var items = line.split(',');
+        for(j in items) {
+          var item = items[j];
+          if(nanpa_pattern.test(item)) {
+            numbers['valid'].push(item);
+          } else if(nanpa_multi_pattern.test(item)) {
+            x = item.split('-');
+            a = parseInt(x[0]);
+            b = parseInt(x[1]);
+            if (a < b) {
+              for(i=a; i<=b; i++) {
+                numbers['valid'].push(i.toString());
+              }
+            }
+          } else if(item != "") {
+            numbers['invalid'].push(item);
+          }
+        }
+      }
+      return numbers;
+    }
+    function doTheThings() {
+      query = qs['q'] || "";
+      page = parseInt(qs['p']) || 1;
+      $('#id_query').val(query);
+      search(query, page);
+      $('#form_query').on("submit", function() {
+        query = $('#id_query').val();
+        page = 1;
+        search(query, page);
+        return false;
+      });
+      $('.pager .next').on('click', function() {
+        page = page+1;
+        search(query);
+      });
+      $('.pager .previous').on('click', function() {
+        page = page-1;
+        search(query);
+      });
+      $(document.body).on('click', '.number-edit' ,function(){
+        $('#edit_number').modal('show');
+        $('#id_edit_number').val($(this).data('number'));
+        $('#id_edit_routes_choice').val($(this).data('route'));
+      });
+      $('.btn-edit-number').on('click', function() {
+        $('#edit_number .number-form').addClass('hidden');
+        $('#edit_number .number-results').removeClass('hidden');
+        var route = $('#id_edit_routes_choice').val();
+        var number = $('#id_edit_number').val();
+        editNumber(1, number, route);
+      });
+      $(document.body).on('click', '.number-delete' ,function(){
+        $('#delete_number').modal('show');
+        $('#id_delete_number').val($(this).data('number'));
+        $('#id_delete_routes_choice').val($(this).data('route'));
+      });
+      $('.btn-delete-number').on('click', function() {
+        $('#delete_number .number-form').addClass('hidden');
+        $('#delete_number .number-results').removeClass('hidden');
+        var number = $('#id_delete_number').val();
+        deleteNumber(1, number);
+      });
+      $('.btn-add-numbers').on('click', function() {
+        $('#add_number .number-form').addClass('hidden');
+        $('#add_number .number-results').removeClass('hidden');
+        var route = $('#id_add_routes_choice').val();
+        var numbers = parseNumbers($('#id_add_numbers').val());
+        for(i in numbers['invalid']) {
+          var number = numbers['invalid'][i];
+          insertAddResult(1, number, "Invalid Number");
+        }
+        for(i in numbers['valid']) {
+          var number = numbers['valid'][i];
+          addNumber(1, number, route)
+        }
+      });
+      $('#add_number').on('hide.bs.modal', function() {
+        $('#add_number .number-form').removeClass('hidden');
+        $('#add_number .number-results').addClass('hidden');
+        $('#add_number .number-results > table > tbody').html('');
+        $('#id_add_routes_choice').val('');
+        $('#id_add_numbers').val('');
+      });
+      $('#edit_number').on('hide.bs.modal', function() {
+        $('#edit_number .number-form').removeClass('hidden');
+        $('#edit_number .number-results').addClass('hidden');
+        $('#edit_number .number-results > table > tbody').html('');
+        $('#id_edit_routes_choice').val('');
+        $('#id_edit_number').val('');
+      });
+      $('#delete_number').on('hide.bs.modal', function() {
+        $('#delete_number .number-form').removeClass('hidden');
+        $('#delete_number .number-results').addClass('hidden');
+        $('#delete_number .number-results > table > tbody').html('');
+        $('#id_delete_routes_choice').val('');
+        $('#id_delete_number').val('');
+      });
+    }
+
+    $.ajax({
+      url: "{% url 'api:routing-route-list' %}?type=0",
+      success: function(data) {
+        console.log("cacheRoutes success");
+        $(data.results).each(function(idx, item) {
+          routes[item.id] = item.name;
+          $('.route_choices').append('<option value="'+item.id+'">'+item.name+'</option>');
+        });
+        doTheThings();
+      }
+    });
+  </script>
+{% endblock javascript %}

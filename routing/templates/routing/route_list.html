@@ -1,0 +1,43 @@
+{% extends 'routing/base.html' %}
+{% load humanize %}
+
+{% block tool_content %}
+  <h1 class="page-header">
+    <div class="pull-right">
+      <a href="{% url 'routing:route-create' %}" class="number-add btn btn-default"><i class="fa fa-fw fa-plus"></i> Add</a>
+    </div>
+    Routes
+  </h1>
+  <table class="table table-bordered table-striped table-hover">
+    <thead>
+      <tr>
+        <th class="col-lg-5">Name</th>
+        <th class="col-lg-1">Type</th>
+        <th class="col-lg-2">Trunkgroup</th>
+        <th class="col-lg-1">Records</th>
+        <th class="col-lg-1">Numbers</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for object in object_list %}
+        <tr>
+          <td><a href="{% url 'routing:route-detail' object.id %}">{{ object.name }}</a></td>
+          <td>{{ object.get_type_display }}</td>
+          <td class="text-right">{{ object.trunkgroup }}</td>
+          <td class="text-right">{% if object.type == object.TYPE_CHOICE_INTERNAL %}{{ object.records.count|intcomma }}{% else %}--{% endif %}</td>
+          <td class="text-right">{% if object.type == object.TYPE_CHOICE_INTERNAL %}{{ object.numbers.count|intcomma }}{% else %}--{% endif %}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if is_paginated %}
+    <nav>
+      <ul class="pager">
+        <li class="previous {% if not page_obj.has_previous %}disabled{% endif %}"><a href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}"><span aria-hidden="true">&larr;</span> Previous</a></li>
+        <li>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</li>
+        <li class="next {% if not page_obj.has_next %}disabled{% endif %}"><a href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}">Next <span aria-hidden="true">&rarr;</span></a></li>
+      </ul>
+    </nav>
+  {% endif %}
+{% endblock tool_content %}

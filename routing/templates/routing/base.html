@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-3 col-md-2 sidebar">
+      <!-- Tools -->
+      <ul class="nav nav-sidebar">
+        <li class="header">Routing</li>
+        {% url 'routing:number-search' as the_url %}
+        <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+          <a href="{{ the_url }}">
+            Numbers
+            {% if request.get_full_path == the_url %}
+              <span class="sr-only">(current)</span>
+            {% endif %}
+            </a>
+        </li>
+        {% if perms.routing.change_fraudbypass %}
+          {% url 'routing:fraud-bypass-list' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Fraud Bypass
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+              {% endif %}
+              </a>
+          </li>
+        {% endif %}
+        {% if perms.routing.change_outboundroute %}
+          {% url 'routing:outbound-route-list' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Outbound Carrier Override
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+              {% endif %}
+              </a>
+          </li>
+        {% endif %}
+        {% if perms.routing.change_remotecallforward %}
+          {% url 'routing:remote-call-forward-search' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Remote Call Forward
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endif %}
+        {% if perms.routing.change_route %}
+          {% url 'routing:route-list' as the_url %}
+          <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+            <a href="{{ the_url }}">
+              Routes
+              {% if request.get_full_path == the_url %}
+                <span class="sr-only">(current)</span>
+              {% endif %}
+              </a>
+          </li>
+        {% endif %}
+        {% url 'routing:transmission-list' as the_url %}
+        <li {% if request.get_full_path == the_url %}class="active"{% endif %}>
+          <a href="{{ the_url }}">
+            Transmissions
+            {% if request.get_full_path == the_url %}
+              <span class="sr-only">(current)</span>
+            {% endif %}
+            </a>
+        </li>
+      </ul>
+    </div>
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      {% block tool_content %}{% endblock tool_content %}
+    </div>
+  </div>
+{% endblock content %}

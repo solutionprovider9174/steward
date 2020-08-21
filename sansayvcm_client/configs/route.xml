@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XBRouteList>
+    <XBRoute>
+        <tid>20</tid>
+        <alias></alias>
+        <digitMatch></digitMatch>
+        <extension>1</extension>
+        <policy>top_down</policy>
+        <rd>
+            <rdid>554</rdid>
+            <con_Routing>yes</con_Routing>
+        </rd>
+        <tod_type>weekly</tod_type>
+        <tod_weekly>
+            <tod_begin>
+                <day>Monday</day>
+                <hour>00:00:01</hour>
+            </tod_begin>
+            <tod_end>
+                <day>Sunday</day>
+                <hour>24:00:00</hour>
+            </tod_end>
+        </tod_weekly>
+        <matchLenCondition>
+            <minLen>1</minLen>
+            <maxLen>40</maxLen>
+        </matchLenCondition>
+    </XBRoute>
+</XBRouteList>
+

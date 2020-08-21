@@ -1,0 +1,4 @@
+{
+    "directory": "steward/static/bower",
+    "strict-ssl": false,  "http-proxy": "", "https-proxy": ""
+}

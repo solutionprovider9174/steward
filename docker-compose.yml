@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./media:/src/media
+      - ./protected:/src/protected
+    depends_on:
+      - db
+      - redis
+  worker-tool:
+    build: .
+    command: /usr/local/bin/python -O /src/manage.py rqworker tool --pythonpath=/src
+    volumes:
+      - ./media:/src/media
+      - ./protected:/src/protected
+    depends_on:
+      - db
+      - redis
+  worker-deploy:
+    build: .
+    command: /usr/local/bin/python -O /src/manage.py rqworker deploy --pythonpath=/src
+    volumes:
+      - ./media:/src/media
+      - ./protected:/src/protected
+    depends_on:
+      - db
+      - redis
+  db:
+    image: postgres:10.6-alpine
+    environment:
+      POSTGRES_DB: steward
+      POSTGRES_USER: steward
+      POSTGRES_PASSWORD: steward
+    volumes:
+      - ./volumes/postgres/initdb.d:/docker-entrypoint-initdb.d
+  redis:
+    image: redis
+  nginx:
+    image: nginx:1.15-alpine
+    volumes:
+      - ./volumes/nginx/conf.d:/etc/nginx/conf.d
+      - ./static:/var/www/static
+    depends_on:
+      - app
+    ports:
+      - "8080:80"
